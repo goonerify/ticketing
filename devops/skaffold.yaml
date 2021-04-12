@@ -1,0 +1,86 @@
+# TODO: Test context with an external URL
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+profiles:
+  - name: gcb
+    build:
+      googleCloudBuild:
+        projectId: ticketing-dev-308807
+    patches:
+      - op: replace
+        path: /build/artifacts/0/image
+        value: us.gcr.io/ticketing-dev-308807/auth
+      - op: replace
+        path: /build/artifacts/1/image
+        value: us.gcr.io/ticketing-dev-308807/client
+build: # NOTE: Context
+  # local:
+  #   push: false
+  # googleCloudBuild:
+  #   projectId: ticketing-dev-308807
+  artifacts: # NOTE: Context
+    - image: oldledger/ticketing-auth
+      # - image: us.gcr.io/ticketing-dev-308807/auth # This is the format that google cloud build uses to name images
+      # TODO: Test context with an external URL
+      context: E:\Projects\Samples\Microservices\ticketing\auth #FIXME: Use environment variable instead of hardcoding this value
+      docker:
+        dockerfile: Dockerfile
+        # squash: true # Squash docker image layers into single layer to clean secrets
+      sync:
+        manual:
+          - src: "src/**/*.ts" # Files to automatically inject into their pod(s) without rebuilding the app
+            dest: . # Indicates where the files should be synced to. In this case, the same place
+    - image: oldledger/ticketing-client
+      # - image: us.gcr.io/ticketing-dev-308807/client # This is the format that google cloud build uses to name images
+      # TODO: Test context with an external URL
+      context: E:\Projects\Samples\Microservices\ticketing\client #FIXME: Use environment variable instead of hardcoding this value
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "**/*.js" # Files to automatically inject into their pod(s) without rebuilding the app
+            dest: . # Indicates where the files should be synced to. In this case, the same place
+    - image: oldledger/ticketing-tickets
+      # - image: us.gcr.io/ticketing-dev-308807/client # This is the format that google cloud build uses to name images
+      # TODO: Test context with an external URL
+      context: E:\Projects\Samples\Microservices\ticketing\tickets #FIXME: Use environment variable instead of hardcoding this value
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts" # Files to automatically inject into their pod(s) without rebuilding the app
+            dest: . # Indicates where the files should be synced to. In this case, the same place
+    - image: oldledger/ticketing-orders
+      # - image: us.gcr.io/ticketing-dev-308807/client # This is the format that google cloud build uses to name images
+      # TODO: Test context with an external URL
+      context: E:\Projects\Samples\Microservices\ticketing\orders #FIXME: Use environment variable instead of hardcoding this value
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts" # Files to automatically inject into their pod(s) without rebuilding the app
+            dest: . # Indicates where the files should be synced to. In this case, the same place
+    - image: oldledger/ticketing-expiration
+      # - image: us.gcr.io/ticketing-dev-308807/client # This is the format that google cloud build uses to name images
+      # TODO: Test context with an external URL
+      context: E:\Projects\Samples\Microservices\ticketing\expiration #FIXME: Use environment variable instead of hardcoding this value
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts" # Files to automatically inject into their pod(s) without rebuilding the app
+            dest: . # Indicates where the files should be synced to. In this case, the same place
+    - image: oldledger/ticketing-payments
+      # - image: us.gcr.io/ticketing-dev-308807/client # This is the format that google cloud build uses to name images
+      # TODO: Test context with an external URL
+      context: E:\Projects\Samples\Microservices\ticketing\payments #FIXME: Use environment variable instead of hardcoding this value
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts" # Files to automatically inject into their pod(s) without rebuilding the app
+            dest: . # Indicates where the files should be synced to. In this case, the same place

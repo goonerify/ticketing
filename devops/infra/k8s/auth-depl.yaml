@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-depl
+spec:
+  replicas: 1 # Google cloud throws warning when set to 1. Set to 3 to avoid those warnings
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth # NOTE: Context
+          image: oldledger/ticketing-auth
+          # image: us.gcr.io/ticketing-dev-308807/auth
+          env:
+            - name: MONGO_URI
+              value: "mongodb://auth-mongo-srv:27017/auth"
+            - name: JWT_KEY # Just a label for logging
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+          # resources:
+          #   limits:
+          #     memory: "256Mi"
+          #     cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv
+  labels:
+    app: auth
+    service: auth-srv
+spec:
+  selector:
+    app: auth
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

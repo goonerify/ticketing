@@ -1,0 +1,71 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: ticketing
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - ticketing.com
+  # - port: # NOTE: Disable security
+  #     number: 443
+  #     name: https
+  #     protocol: HTTP
+  #   hosts:
+  #   - ticketing.dev
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: ticketing
+spec:
+  hosts:
+    - ticketing.com
+  gateways:
+    - ticketing
+  http: # HTTP matching is done in order, so the last path should be a catch all
+    - match:
+        - uri:
+            regex: /api/users/?(.*)
+      route:
+        - destination:
+            host: auth-srv
+            port:
+              number: 3000
+    - match:
+        - uri:
+            regex: /api/tickets/?(.*)
+      route:
+        - destination:
+            host: tickets-srv
+            port:
+              number: 3000
+    - match:
+        - uri:
+            regex: /api/orders/?(.*)
+      route:
+        - destination:
+            host: orders-srv
+            port:
+              number: 3000
+    - match:
+        - uri:
+            regex: /api/payments/?(.*)
+      route:
+        - destination:
+            host: payments-srv
+            port:
+              number: 3000
+    - match:
+        - uri:
+            regex: /?(.*) # Strangely, this path cannot easily be changed. I guess that's part of the magic of nextjs
+      route:
+        - destination:
+            host: client-srv
+            port:
+              number: 3000

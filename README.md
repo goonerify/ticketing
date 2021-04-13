@@ -91,6 +91,19 @@ NUKE DOCKER IMAGES AND CONTAINERS
 `docker container rm $(docker container ls -aq) -f`
 `docker image rm $(docker image ls -aq) -f`
 
+DIGITAL OCEAN
+Authenticating with Doctl
+`doctl auth init`
+
+Get connection info for our new cluster
+`doctl kubernetes cluster kubeconfig save <cluster_name>`
+
+List all contexts
+`kubectl config view`
+
+Use a different context
+`kubectl config use-context <context_name>`
+
 TODO
 RabbitMQ
 Database polling

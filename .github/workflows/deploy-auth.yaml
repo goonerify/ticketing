@@ -1,0 +1,24 @@
+name: deploy-auth
+on:
+  # Merging a PR is regarded as a push, therefore this workflow will run whenever 
+  # we merge a PR that contains changes in the auth directory into the main branch
+  push:
+    branches:
+      - main
+    paths:
+      - 'auth/**'
+      
+jobs:
+  build: # The job id. We'll call it build but could be anything
+    runs-on: ubuntu-latest
+    steps:
+      # checkout all the code in our repository
+      - uses: actions/checkout@v2
+      # Command to run (build the image and push to docker hub)
+      - run: cd auth && docker build -t oldledger/auth .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      # Instruct github to add our secrets to this job as environment variables
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker push oldledger/auth

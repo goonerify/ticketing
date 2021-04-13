@@ -3,3 +3,5 @@ common/
 microservices-casts/
 nats-test/
 t/
+devops/creds/
+GOOGLE_CREDENTIALS.json

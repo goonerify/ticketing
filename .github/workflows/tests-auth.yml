@@ -1,6 +1,9 @@
 name: tests-auth
 
-on: pull_request
+on:
+  pull_request:
+    paths: # Only run jobs if there are changes to the files below
+      - "auth/**"
 
 jobs:
   build:

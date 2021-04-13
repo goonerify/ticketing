@@ -8,11 +8,11 @@ import { Order, OrderStatus } from "../../models/order";
 import { natsWrapper } from "../../nats-wrapper";
 
 it("cannot be accessed if the user is not signed in", async () => {
-  request(app).post("/api/orders").send({}).expect(401);
+  await request(app).post("/api/orders").send({}).expect(401);
 });
 
 it("cannot be accessed if an invalid ticket id is provided", async () => {
-  request(app)
+  await request(app)
     .post("/api/orders")
     .set("Cookie", global.signin())
     .send({

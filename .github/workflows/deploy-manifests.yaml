@@ -14,12 +14,12 @@ jobs:
     steps:
       # checkout all the code in our repository
       - uses: actions/checkout@v2
-      # Install digital ocean CLI (doctl)
-      - uses: digitalocean/action-doctl@v2
+      - uses: azure/aks-set-context@v1
         with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      # Set active kubernetes config to digital ocean cluster
-      - run: doctl kubernetes cluster kubeconfig save ticketing
+            creds: '${{ secrets.AZURE_CREDENTIALS }}' # Azure credentials
+            resource-group: 'ticketingRG'
+            cluster-name: 'ticketingCluster'
+        id: login
       # Apply all the config files in the k8s directory
       - run: kubectl apply -f infra/k8s -f infra/k8s-prod
             

@@ -12,7 +12,7 @@ jobs:
   build: # The job id. We'll call it build but could be anything
     runs-on: ubuntu-latest
     steps:
-      # checkout all the code in our repository
+      # checkout the code in our repository (latest branch)
       - uses: actions/checkout@v2
       # Command to run (build the image and push to docker hub)
       - run: cd auth && docker build -t oldledger/auth .
@@ -24,12 +24,12 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       # Push built image to docker hub
       - run: docker push oldledger/auth
-      # Install digital ocean CLI (doctl)
-      - uses: digitalocean/action-doctl@v2
+      - uses: azure/aks-set-context@v1
         with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      # Set active kubernetes config to digital ocean cluster
-      - run: doctl kubernetes cluster kubeconfig save ticketing
+            creds: '${{ secrets.AZURE_CREDENTIALS }}' # Azure credentials
+            resource-group: 'ticketingRG'
+            cluster-name: 'ticketingCluster'
+        id: login
       # Instruct github to restart the auth deployment in the cluster
       - run: kubectl rollout restart deployment auth-depl
             

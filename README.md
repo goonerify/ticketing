@@ -104,6 +104,10 @@ List all contexts
 Use a different context
 `kubectl config use-context <context_name>`
 
+Deploy your cluster using aks-engine and the istio.json aks-engine API model definition
+`cd E:\Projects\Samples\Devops\Azure\Istio Model`
+`aks-engine deploy --subscription-id cec58d51-2b5f-4dcd-a97b-9bac721ae4dc --resource-group "ticketingRG" --dns-prefix "ticketingC-ticketingRG-cec58d" --location "East US" --auto-suffix --api-model istio.json`
+
 TODO
 RabbitMQ
 Database polling

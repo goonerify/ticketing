@@ -20,6 +20,18 @@ jobs:
             resource-group: 'ticketingRG'
             cluster-name: 'ticketingCluster'
         id: login
+        ### Online template
+      - name: Get kubeconfig
+        id: kubeconfig
+        run: a="$(cat ~/.kube/config)"; a="${a//'%'/'%25'}"; a="${a//$'\n'/'%0A'}"; a="${a//$'\r'/'%0D'}"; echo "::set-output name=config::$a"
+      - name: Install Istio
+        uses: huang195/actions-install-istio@v1.0.0
+        with:
+          kubeconfig: "${{steps.kubeconfig.outputs.config}}"
+          istio version: '1.6.3'
+      - name: Interact with the cluster
+        run: kubectl get all --all-namespaces
+        ###
       # Apply all the config files in the k8s directory
       - run: kubectl apply -f infra/k8s -f infra/k8s-prod
             

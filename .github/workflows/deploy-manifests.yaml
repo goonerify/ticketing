@@ -28,6 +28,14 @@ jobs:
           context: 'ticketingCluster-admin'
         id: setcontext
         ###
-      # Apply all the config files in the k8s directory
-      - run: kubectl apply -f infra/k8s -f infra/k8s-prod
+      - uses: Azure/k8s-deploy@v1.4
+        with:
+          manifests: |
+              infra/k8s
+              infra/k8s-prod
+          strategy: canary
+          traffic-split-method: smi
+          percentage: 20
+          baseline-and-canary-replicas: 1
+        ###
             

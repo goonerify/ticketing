@@ -24,7 +24,7 @@ Get existing secret
 `kubectl get secrets`
 
 Switch cygdrive directory
-`cd /cygdrive/e/Projects/Samples/Microservices/ticketing/devops/`
+`cd /cygdrive/e/Projects/Samples/Microservices/ticketing/infra/`
 
 TODO: Test if building services without istio is faster
 

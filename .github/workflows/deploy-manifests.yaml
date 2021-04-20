@@ -25,7 +25,7 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: '${{ secrets.AZURE_KUBECONFIG }}'
-          context: 'ticketingCluster-admin'
+          context: 'ticketingC-ticketingRG-cec58d-607e0f65'
         id: setcontext
         ###
       - uses: Azure/k8s-deploy@v1.4

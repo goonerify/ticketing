@@ -34,4 +34,3 @@ jobs:
         ###
       # Instruct github to restart the auth deployment in the cluster
       - run: kubectl rollout restart deployment auth-depl
-            

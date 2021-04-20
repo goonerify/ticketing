@@ -111,3 +111,27 @@ Deploy your cluster using aks-engine and the istio.json aks-engine API model def
 TODO
 RabbitMQ
 Database polling
+
+STEPS TO CONFIGURE KUBERNETES WITH ISTIO SERVICE MESH
+Create Resource Group
+`az group create --name ticketingRG --location "East US"`
+Create Azure kubernetes service
+`az aks create --resource-group ticketingRG --name ticketingCluster --node-count 3 --kubernetes-version 1.20.2 --generate-ssh-keys`
+
+From the directory (E:\Projects\Samples\Devops\Azure\Istio Model)
+Deploy the cluster using istio.json template
+`aks-engine deploy --subscription-id cec58d51-2b5f-4dcd-a97b-9bac721ae4dc --resource-group ticketingRG --dns-prefix ticketingC-ticketingRG-cec58d --location "East US" --auto-suffix --api-model istio.json`
+
+Use the <dns_prefix>-<id> cluster ID, to copy your kubeconfig to your machine from the \_output folder
+`cp _output\ticketingC-ticketingRG-cec58d-<cluster id>\kubeconfig\kubeconfig.eastus.json ~/.kube/config`
+
+Create Secrets for the ticketing app
+`kubectl create secret generic jwt-secret --from-literal=JWT_KEY=asdfasdf`
+`kubectl create secret generic stripe-secret --from-literal=STRIPE_KEY=sk_test_51If4DQGmbPFPG9W4sGLaMoSx4Y43ObwrFzDvEVaI020wrLX7mysnEXeiEHggKxi0ndk6I9PJeZyDpCrZn2QOe9sO00jKjKb7RZ`
+
+IMPORTANT: Set context
+`az aks get-credentials --admin --name ticketingCluster --resource-group ticketingRG`
+`az aks get-credentials --name ticketingCluster --resource-group ticketingRG`
+
+IMPORTANT: Install istio only after context has been set
+`istioctl install`

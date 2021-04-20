@@ -24,19 +24,13 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       # Push built image to docker hub
       - run: docker push oldledger/auth
+        ### Online template
       - uses: azure/aks-set-context@v1
         with:
             creds: '${{ secrets.AZURE_CREDENTIALS }}' # Azure credentials
             resource-group: 'ticketingRG'
             cluster-name: 'ticketingCluster'
         id: login
-        ### Online template
-      - uses: azure/k8s-set-context@v1
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.AZURE_KUBECONFIG }}
-          context: ticketingCluster-admin
-        id: setcontext
         ###
       # Instruct github to restart the auth deployment in the cluster
       - run: kubectl rollout restart deployment auth-depl

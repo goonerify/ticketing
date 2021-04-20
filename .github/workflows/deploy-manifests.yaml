@@ -13,18 +13,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         ### Online template
-      - uses: azure/aks-set-context@v1
-        with:
-            creds: '${{ secrets.AZURE_CREDENTIALS }}' # Azure credentials
-            resource-group: 'ticketingRG'
-            cluster-name: 'ticketingCluster'
-        id: login
       - uses: azure/k8s-set-context@v1
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.AZURE_KUBECONFIG }}
           context: ticketingC-ticketingRG-cec58d-607e7338
         id: setcontext
+      - uses: azure/aks-set-context@v1
+        with:
+            creds: '${{ secrets.AZURE_CREDENTIALS }}' # Azure credentials
+            resource-group: 'ticketingRG'
+            cluster-name: 'ticketingCluster'
+        id: login
         ###
       - uses: Azure/k8s-deploy@v1.4
         with:

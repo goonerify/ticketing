@@ -29,8 +29,9 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.AZURE_KUBECONFIG }}
-          context: ticketingCluster-admin
+          context: ticketingCluster
         id: setcontext
         ###
       # Instruct github to restart the auth deployment in the cluster
-      - run: kubectl rollout restart deployment auth-depl
+      - run: kubectl apply -f infra/k8s/auth-depl.yaml
+            

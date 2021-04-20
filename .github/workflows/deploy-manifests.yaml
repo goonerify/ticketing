@@ -12,14 +12,6 @@ jobs:
   build: # The job id. We'll call it build but could be anything
     runs-on: ubuntu-latest
     steps:
-      # checkout all the code in our repository
-      - uses: actions/checkout@v2
-      - uses: azure/aks-set-context@v1
-        with:
-            creds: '${{ secrets.AZURE_CREDENTIALS }}' # Azure credentials
-            resource-group: 'ticketingRG'
-            cluster-name: 'ticketingCluster'
-        id: login
         ### Online template
       - uses: azure/k8s-set-context@v1
         with:

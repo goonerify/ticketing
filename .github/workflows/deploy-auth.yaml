@@ -61,7 +61,7 @@ jobs:
       - uses: Azure/k8s-deploy@v1.4
         with:
           manifests: |
-            auth/auth-depl.yml
+            infra/k8s/auth-depl.yml
           images: |
             oldledger/auth
           # strategy: canary

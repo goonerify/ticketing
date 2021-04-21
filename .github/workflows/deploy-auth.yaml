@@ -35,9 +35,12 @@ jobs:
           docker push oldledger/auth
 
       # Set kubernetes context
-      - uses: Azure/k8s-set-context@v1
+      - uses: azure/k8s-set-context@v1
         with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+          method: service-account
+          k8s-url: ticketingc-ticketingrg-cec58d-0764636b.hcp.eastus.azmk8s.io
+          k8s-secret: ${{ secrets.AZURE_SERVICE_PRINCIPAL_CREDENTIALS  }}
+        id: setcontext
 
       # Create secrets to use in the app
       - uses: Azure/k8s-create-secret@v1

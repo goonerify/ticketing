@@ -45,9 +45,16 @@ jobs:
       # Create secrets to use in the app
       - uses: Azure/k8s-create-secret@v1
         with:
-          jwt-secret: ${{ secrets.JWT_KEY }}
-          stripe-secret: ${{ secrets.STRIPE_KEY }}
-          secret-name: ticketing-k8s-secret
+          namespace: "default"
+          secret-type: "generic"
+          arguments: --from-literal=JWT_KEY=${{ secrets.JWT_KEY }}
+          secret-name: jwt-secret
+      - uses: Azure/k8s-create-secret@v1
+        with:
+          namespace: "default"
+          secret-type: "generic"
+          arguments: --from-literal=STRIPE_KEY=${{ secrets.STRIPE_KEY }}
+          secret-name: stripe-secret
 
       # Deploy image to cluster
       - uses: Azure/k8s-deploy@v1.4
@@ -57,7 +64,8 @@ jobs:
           images: |
             oldledger/auth
           imagepullsecrets: |
-            ticketing-k8s-secret
+            jwt-secret
+            stripe-secret
 
       # Cleanup
       - name: logout

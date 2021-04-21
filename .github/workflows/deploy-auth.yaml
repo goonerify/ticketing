@@ -34,12 +34,18 @@ jobs:
           cd auth && docker build -t oldledger/auth .
           docker push oldledger/auth
 
-      # Set kubernetes context
+      # # Set kubernetes context
+      # - uses: azure/k8s-set-context@v1
+      #   with:
+      #     method: service-account
+      #     k8s-url: https://ticketingc-ticketingrg-cec58d-0764636b.hcp.eastus.azmk8s.io:443
+      #     k8s-secret: ${{ secrets.K8S_SERVICE_ACCOUNT_SECRETS  }}
+      #   id: setcontext
       - uses: azure/k8s-set-context@v1
         with:
-          method: service-account
-          k8s-url: https://ticketingc-ticketingrg-cec58d-0764636b.hcp.eastus.azmk8s.io:443
-          k8s-secret: ${{ secrets.K8S_SERVICE_ACCOUNT_SECRETS  }}
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_KUBE_CONFIG }}
+          context: ticketingCluster
         id: setcontext
 
       # Create secrets to use in the app

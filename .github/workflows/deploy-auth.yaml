@@ -33,6 +33,7 @@ jobs:
       - run: |
           cd auth && docker build -t oldledger/auth .
           docker push oldledger/auth
+          cd ..
 
       # Set kubernetes context
       - uses: azure/k8s-set-context@v1

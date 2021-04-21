@@ -63,9 +63,9 @@ jobs:
             auth/auth-depl.yml
           images: |
             oldledger/auth
-          imagepullsecrets: |
-            jwt-secret
-            stripe-secret
+          # imagepullsecrets: |
+          #   jwt-secret
+          #   stripe-secret
 
       # Cleanup
       - name: logout

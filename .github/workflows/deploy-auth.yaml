@@ -31,8 +31,8 @@ jobs:
 
       # Build the image and push to docker hub
       - run: |
-          cd auth && docker build -t oldledger/auth .
-          docker push oldledger/auth
+          cd auth && docker build -t oldledger/ticketing-auth .
+          docker push oldledger/ticketing-auth
 
       # # Set kubernetes context
       # - uses: azure/k8s-set-context@v1
@@ -69,7 +69,7 @@ jobs:
             infra/k8s/auth-depl.yaml
             infra/k8s-prod/ingress-srv.yaml
           images: |
-            oldledger/auth
+            oldledger/ticketing-auth
           # strategy: canary
           # percentage: 100
 

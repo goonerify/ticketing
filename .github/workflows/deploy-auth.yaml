@@ -45,13 +45,13 @@ jobs:
       # Create secrets to use in the app
       - uses: Azure/k8s-create-secret@v1
         with:
-          namespace: "default"
+          namespace: "kube-system"
           secret-type: "generic"
           arguments: --from-literal=JWT_KEY=${{ secrets.JWT_KEY }}
           secret-name: jwt-secret
       - uses: Azure/k8s-create-secret@v1
         with:
-          namespace: "default"
+          namespace: "kube-system"
           secret-type: "generic"
           arguments: --from-literal=STRIPE_KEY=${{ secrets.STRIPE_KEY }}
           secret-name: stripe-secret
@@ -63,9 +63,8 @@ jobs:
             auth/auth-depl.yml
           images: |
             oldledger/auth
-          # imagepullsecrets: |
-          #   jwt-secret
-          #   stripe-secret
+          # strategy: canary
+          # percentage: 100
 
       # Cleanup
       - name: logout

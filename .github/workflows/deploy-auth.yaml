@@ -45,7 +45,7 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.K8S_KUBE_CONFIG }}
-          context: ticketingCluster
+          context: ticketingCluster-admin
         id: setcontext
 
       # Create secrets to use in the app

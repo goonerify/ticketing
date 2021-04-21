@@ -43,18 +43,18 @@ jobs:
         id: setcontext
 
       # Create secrets to use in the app
-      - uses: Azure/k8s-create-secret@v1
-        with:
-          namespace: "kube-system"
-          secret-type: "generic"
-          arguments: --from-literal=JWT_KEY=${{ secrets.JWT_KEY }}
-          secret-name: jwt-secret
-      - uses: Azure/k8s-create-secret@v1
-        with:
-          namespace: "kube-system"
-          secret-type: "generic"
-          arguments: --from-literal=STRIPE_KEY=${{ secrets.STRIPE_KEY }}
-          secret-name: stripe-secret
+      # - uses: Azure/k8s-create-secret@v1
+      #   with:
+      #     namespace: "kube-system"
+      #     secret-type: "generic"
+      #     arguments: --from-literal=JWT_KEY=${{ secrets.JWT_KEY }}
+      #     secret-name: jwt-secret
+      # - uses: Azure/k8s-create-secret@v1
+      #   with:
+      #     namespace: "kube-system"
+      #     secret-type: "generic"
+      #     arguments: --from-literal=STRIPE_KEY=${{ secrets.STRIPE_KEY }}
+      #     secret-name: stripe-secret
 
       # Deploy image to cluster
       - uses: Azure/k8s-deploy@v1.4

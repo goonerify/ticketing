@@ -1,77 +1,92 @@
 name: deploy-auth
 on:
-  # Merging a PR is regarded as a push, therefore this workflow will run whenever 
+  # Merging a PR is regarded as a push, therefore this workflow will run whenever
   # we merge a PR that contains changes in the auth directory into the main branch
   push:
     branches:
       - main
     paths:
-      - 'auth/**'
+      - "auth/**"
   pull_request:
     branches:
       - main
-      
+
 jobs:
   build-and-deploy: # The job id. We'll call it build but could be anything
     runs-on: ubuntu-latest
     steps:
       # checkout the repo
       - uses: actions/checkout@main
-      
-      - name: 'Login via Azure CLI'
+
+      - name: "Login via Azure CLI"
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_SERVICE_PRINCIPAL_CREDENTIALS }}
-      
+
       # Log in to docker hub
       - uses: azure/docker-login@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          
+
       # Build the image and push to docker hub
       - run: |
-          cd auth && docker build -t oldledger/auth .
-          docker push oldledger/auth
-      
-      # Set kubernetes context
-      - uses: Azure/k8s-set-context@v1
+          cd auth && docker build -t oldledger/ticketing-auth .
+          docker push oldledger/ticketing-auth
+
+      # # Set kubernetes context
+      # - uses: azure/k8s-set-context@v1
+      #   with:
+      #     method: service-account
+      #     k8s-url: https://ticketingc-ticketingrg-cec58d-0764636b.hcp.eastus.azmk8s.io:443
+      #     k8s-secret: ${{ secrets.K8S_SERVICE_ACCOUNT_SECRETS  }}
+      #   id: setcontext
+      - uses: azure/k8s-set-context@v1
         with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
-        
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_KUBE_CONFIG }}
+          context: ticketingCluster-admin
+        id: setcontext
+
       # Create secrets to use in the app
-      - uses: Azure/k8s-create-secret@v1
-        with:
-          jwt-secret: ${{ secrets.JWT_KEY }}
-          stripe-secret: ${{ secrets.STRIPE_KEY }}
-          secret-name: ticketing-k8s-secret
+      # - uses: Azure/k8s-create-secret@v1
+      #   with:
+      #     namespace: "kube-system"
+      #     secret-type: "generic"
+      #     arguments: --from-literal=JWT_KEY=${{ secrets.JWT_KEY }}
+      #     secret-name: jwt-secret
+      # - uses: Azure/k8s-create-secret@v1
+      #   with:
+      #     namespace: "kube-system"
+      #     secret-type: "generic"
+      #     arguments: --from-literal=STRIPE_KEY=${{ secrets.STRIPE_KEY }}
+      #     secret-name: stripe-secret
 
       # Deploy image to cluster
       - uses: Azure/k8s-deploy@v1.4
         with:
           manifests: |
-            auth/auth-depl.yml
+            infra/k8s/auth-depl.yaml
+            infra/k8s-prod/ingress-srv.yaml
           images: |
-            oldledger/auth
-          imagepullsecrets: |
-            ticketing-k8s-secret
-            
+            oldledger/ticketing-auth
+          # strategy: canary
+          # percentage: 100
+
+      - run: kubectl rollout restart deployment auth-depl
+
       # Cleanup
       - name: logout
         run: |
           az logout
-          
-          
-          
+
       ### Online template
       # - uses: azure/k8s-set-context@v1
-        # with:
-          # method: kubeconfig
-          # kubeconfig: ${{ secrets.AZURE_KUBECONFIG }}
-          # context: ticketingCluster-admin
-        # id: setcontext
-        ###
+      # with:
+      # method: kubeconfig
+      # kubeconfig: ${{ secrets.AZURE_KUBECONFIG }}
+      # context: ticketingCluster-admin
+      # id: setcontext
+      ###
       # Instruct github to restart the auth deployment in the cluster
       # - run: kubectl apply -f infra/k8s/auth-depl.yaml
-      
-            

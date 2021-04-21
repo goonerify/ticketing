@@ -1,33 +1,37 @@
 name: deploy-manifest
 on:
-  # Merging a PR is regarded as a push, therefore this workflow will run whenever 
+  # Merging a PR is regarded as a push, therefore this workflow will run whenever
   # we merge a PR that contains changes in the auth directory into the main branch
   push:
     branches:
       - main
     paths:
-      - 'infra/**'
-      
+      - "infra/**"
+
 jobs:
-  build: # The job id. We'll call it build but could be anything
+  build:
     runs-on: ubuntu-latest
     steps:
-        ### Online template
+      # Set kubernetes context
+      # - uses: azure/k8s-set-context@v1
+      #   with:
+      #     method: service-account
+      #     k8s-url: https://ticketingc-ticketingrg-cec58d-0764636b.hcp.eastus.azmk8s.io:443
+      #     k8s-secret: ${{ secrets.K8S_SERVICE_ACCOUNT_SECRETS  }}
+      #   id: setcontext
       - uses: azure/k8s-set-context@v1
         with:
-          method: service-account
-          k8s-url: ticketingc-ticketingrg-cec58d-0764636b.hcp.eastus.azmk8s.io
-          k8s-secret: ${{ secrets.AZURE_SERVICE_PRINCIPAL_CREDENTIALS  }}
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_KUBE_CONFIG }}
+          context: ticketingCluster-admin
         id: setcontext
-        ###
       - uses: Azure/k8s-deploy@v1.4
         with:
           manifests: |
-              infra/k8s
-              infra/k8s-prod
+            infra/k8s
+            infra/k8s-prod
           strategy: canary
           traffic-split-method: smi
           percentage: 20
           baseline-and-canary-replicas: 1
         ###
-            

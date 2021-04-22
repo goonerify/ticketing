@@ -11,7 +11,7 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - ticketing.com
+        - "*"
   # - port: # NOTE: Disable security
   #     number: 443
   #     name: https
@@ -25,7 +25,7 @@ metadata:
   name: ticketing
 spec:
   hosts:
-    - ticketing.com
+    - "*"
   gateways:
     - ticketing
   http: # HTTP matching is done in order, so the last path should be a catch all

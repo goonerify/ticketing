@@ -111,15 +111,34 @@ Deploy your cluster using aks-engine and the istio.json aks-engine API model def
 TODO
 RabbitMQ
 Database polling
+Get all other pods running
+Activate istio control plane pods in AKS
+Bookmark all the useful documentation
 
 STEPS TO CONFIGURE KUBERNETES WITH ISTIO SERVICE MESH
 Create Resource Group
 `az group create --name ticketingRG --location "East US"`
+
+Create (and login to) an Azure Container Registry if it doesn't already exist (Optional)
+
+`az acr create --name ticketingRegistry --resource-group ticketingRG --sku Standard`
+`az acr login --name ticketingRegistry`
+
+Create a service principal for github if it doesn't exist already (Optional)
+
+**IMPORTANT: Copy the returned JSON into github secrets AZURE_CREDENTIALS**
+
+`az ad sp create-for-rbac -n "ticketingAppSP" --sdk-auth --role Contributor --scopes /subscriptions/cec58d51-2b5f-4dcd-a97b-9bac721ae4dc/resourceGroups/ticketingRG`
+
 Create Azure kubernetes service
 `az aks create --resource-group ticketingRG --name ticketingCluster --node-count 3 --kubernetes-version 1.20.2 --generate-ssh-keys`
 
 From the directory (E:\Projects\Samples\Devops\Azure\Istio Model)
 Deploy the cluster using istio.json template
+
+# Reference: https://istio.io/latest/docs/setup/platform-setup/azure/#aks-engine
+
+`cd "E:\Projects\Samples\Devops\Azure\Istio Model"`
 `aks-engine deploy --subscription-id cec58d51-2b5f-4dcd-a97b-9bac721ae4dc --resource-group ticketingRG --dns-prefix ticketingC-ticketingRG-cec58d --location "East US" --auto-suffix --api-model istio.json`
 
 Use the <dns_prefix>-<id> cluster ID, to copy your kubeconfig to your machine from the \_output folder
@@ -130,8 +149,13 @@ Create Secrets for the ticketing app
 `kubectl create secret generic stripe-secret --from-literal=STRIPE_KEY=sk_test_51If4DQGmbPFPG9W4sGLaMoSx4Y43ObwrFzDvEVaI020wrLX7mysnEXeiEHggKxi0ndk6I9PJeZyDpCrZn2QOe9sO00jKjKb7RZ`
 
 IMPORTANT: Set context
+**IMPORTANT: REMEMBER TO UPDATE GITHUB KUBE_CONFIG WITH THE NEW CREDENTIALS**
 `az aks get-credentials --admin --name ticketingCluster --resource-group ticketingRG`
-`az aks get-credentials --name ticketingCluster --resource-group ticketingRG`
+
+<!-- `az aks get-credentials --name ticketingCluster --resource-group ticketingRG` -->
 
 IMPORTANT: Install istio only after context has been set
 `istioctl install`
+
+Enable istio sidecar injection in the default namespace (Optional)
+`kubectl label namespace default istio-injection=enabled`

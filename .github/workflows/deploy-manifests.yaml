@@ -31,8 +31,8 @@ jobs:
       - uses: Azure/k8s-deploy@v1.4
         with:
           manifests: |
-            infra/k8s
-            infra/k8s-prod
+            infra/k8s/*
+            infra/k8s-prod/ingress-srv.yaml
           strategy: canary
           traffic-split-method: smi
           percentage: 20

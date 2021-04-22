@@ -1,0 +1,74 @@
+name: deploy-orders
+on:
+  # Merging a PR is regarded as a push, therefore this workflow will run whenever
+  # we merge a PR that contains changes in the orders directory into the main branch
+  push:
+    branches:
+      - main
+    paths:
+      - "orders/**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy: # The job id. We'll call it build but could be anything
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repo
+      - uses: actions/checkout@main
+
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_SERVICE_PRINCIPAL_CREDENTIALS }}
+
+      # Log in to docker hub
+      - uses: azure/docker-login@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build the image and push to docker hub
+      - run: |
+          cd orders && docker build -t oldledger/ticketing-orders .
+          docker push oldledger/ticketing-orders
+
+      - uses: azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_KUBE_CONFIG }}
+          context: ticketingCluster-admin
+        id: setcontext
+
+      # Create secrets to use in the app
+      # - uses: Azure/k8s-create-secret@v1
+      #   with:
+      #     namespace: "kube-system"
+      #     secret-type: "generic"
+      #     arguments: --from-literal=JWT_KEY=${{ secrets.JWT_KEY }}
+      #     secret-name: jwt-secret
+      # - uses: Azure/k8s-create-secret@v1
+      #   with:
+      #     namespace: "kube-system"
+      #     secret-type: "generic"
+      #     arguments: --from-literal=STRIPE_KEY=${{ secrets.STRIPE_KEY }}
+      #     secret-name: stripe-secret
+
+      # Deploy image to cluster
+      - uses: Azure/k8s-deploy@v1.4
+        with:
+          manifests: |
+            infra/k8s/orders-depl.yaml
+            infra/k8s-prod/ingress-srv.yaml
+          images: |
+            oldledger/ticketing-orders
+          # strategy: canary
+          # percentage: 100
+
+      - run: kubectl rollout restart deployment orders-depl
+
+      # Cleanup
+      - name: logout
+        run: |
+          az logout

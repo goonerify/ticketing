@@ -15,6 +15,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@main
       # Set kubernetes context
       # - uses: azure/k8s-set-context@v1
       #   with:

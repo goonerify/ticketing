@@ -31,7 +31,7 @@ jobs:
 
       # Build the image and push to docker hub
       - run: |
-          cd payments && docker build -t oldledger/ticketing-payments .
+          cd payments && docker build --target prod -t oldledger/ticketing-payments .
           docker push oldledger/ticketing-payments
 
       - uses: azure/k8s-set-context@v1

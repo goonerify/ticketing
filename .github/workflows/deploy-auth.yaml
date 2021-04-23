@@ -31,7 +31,7 @@ jobs:
 
       # Build the image and push to docker hub
       - run: |
-          cd auth && docker build -t oldledger/ticketing-auth .
+          cd auth && docker build --target prod -t oldledger/ticketing-auth .
           docker push oldledger/ticketing-auth
 
       - uses: azure/k8s-set-context@v1

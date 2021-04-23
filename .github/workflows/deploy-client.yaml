@@ -31,7 +31,7 @@ jobs:
 
       # Build the image and push to docker hub
       - run: |
-          cd client && docker build -t oldledger/ticketing-client .
+          cd client && docker build --target prod -t oldledger/ticketing-client .
           docker push oldledger/ticketing-client
 
       - uses: azure/k8s-set-context@v1

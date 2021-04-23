@@ -6,7 +6,7 @@ export default ({ req }) => {
 
     // Create a pre-configured version of axios client with a baseurl, domain, headers wired up
     return axios.create({
-      baseURL: "http://istio-ingressgateway.istio-system.svc.cluster.local",
+      baseURL: "http://40.88.54.78",
       headers: req.headers,
     });
   } else {

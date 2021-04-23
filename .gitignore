@@ -7,3 +7,4 @@ devops/creds/
 GOOGLE_CREDENTIALS.json
 infra/deploy-auth.yaml
 infra/deploy-manifests.yaml
+README.md

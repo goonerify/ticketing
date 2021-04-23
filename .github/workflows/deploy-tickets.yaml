@@ -66,7 +66,8 @@ jobs:
           # strategy: canary
           # percentage: 100
 
-      - run: kubectl rollout restart deployment tickets-depl
+      # - run: kubectl rollout restart deployment tickets-depl
+      - run: kubectl apply -f infra/k8s/tickets-depl.yaml
 
       # Cleanup
       - name: logout

@@ -8,26 +8,32 @@ import { OrderCreatedListener } from "./events/listeners/order-created-listener"
 const start = async () => {
   console.log("Starting up.....");
   if (!process.env.JWT_KEY) {
+    console.log("no nats jwt key");
     throw new Error("JWT_KEY must be defined");
   }
 
   if (!process.env.MONGO_URI) {
+    console.log("no nats mongo uri");
     throw new Error("MONGO_URI must be defined");
   }
 
   if (!process.env.NATS_CLIENT_ID) {
+    console.log("no nats client id");
     throw new Error("NATS_CLIENT_ID must be defined");
   }
 
   if (!process.env.NATS_URL) {
+    console.log("no nats url");
     throw new Error("NATS_URL must be defined");
   }
 
   if (!process.env.NATS_CLUSTER_ID) {
+    console.log("no nats cluster id");
     throw new Error("NATS_CLUSTER_ID must be defined");
   }
 
   try {
+    console.log("Connecting nats wrapper");
     await natsWrapper.connect(
       process.env.NATS_CLUSTER_ID,
       process.env.NATS_CLIENT_ID,
@@ -40,13 +46,21 @@ const start = async () => {
     });
 
     // exit process entirely when the connection is interrupted
-    process.on("SIGINT", () => natsWrapper.client.close());
-    process.on("SIGTERM", () => natsWrapper.client.close());
+    process.on("SIGINT", () => {
+      console.log("exit on sigint");
+      natsWrapper.client.close();
+    });
+    process.on("SIGTERM", () => {
+      console.log("exit on sigterm");
+      natsWrapper.client.close();
+    });
 
+    console.log("activating listeners");
     // activate listeners for incoming events
     new OrderCreatedListener(natsWrapper.client).listen();
     new OrderCancelledListener(natsWrapper.client).listen();
 
+    console.log("connecting mongoose");
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,

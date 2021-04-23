@@ -40,12 +40,14 @@ const start = async () => {
       process.env.NATS_URL
     );
 
+    console.log("nats client close");
     natsWrapper.client.on("close", () => {
       console.log("NATS connection closed!");
       process.exit(); // exit process entirely when we lose the connection to nats
     });
 
     // exit process entirely when the connection is interrupted
+    console.log("nats sigint");
     process.on("SIGINT", () => {
       console.log("exit on sigint");
       natsWrapper.client.close();

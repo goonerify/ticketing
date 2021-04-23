@@ -12,6 +12,9 @@ spec:
       labels:
         app: client
     spec:
+      env:
+        - name: NODE_ENV
+          value: production
       containers:
         - name: client
           image: oldledger/ticketing-client

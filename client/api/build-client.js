@@ -4,6 +4,7 @@ export default ({ req }) => {
   if (typeof window === "undefined") {
     // We are on the server
 
+    console.log("Build client 1");
     try {
       // Create a pre-configured version of axios client with a baseurl, domain, headers wired up
       return axios.create({
@@ -15,6 +16,7 @@ export default ({ req }) => {
       console.dir(err);
     }
   } else {
+    console.log("Build client 2");
     // We must be on the
     // Create a pre-configured version of axios client
     try {

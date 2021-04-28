@@ -7,11 +7,15 @@ on:
       - main
     paths:
       - "infra/**"
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@main
       # Set kubernetes context
       # - uses: azure/k8s-set-context@v1
       #   with:
@@ -25,13 +29,10 @@ jobs:
           kubeconfig: ${{ secrets.K8S_KUBE_CONFIG }}
           context: ticketingCluster-admin
         id: setcontext
+      - run: ls -la
       - uses: Azure/k8s-deploy@v1.4
         with:
           manifests: |
-            infra/k8s
-            infra/k8s-prod
-          strategy: canary
-          traffic-split-method: smi
-          percentage: 20
-          baseline-and-canary-replicas: 1
+            infra/k8s/*
+            infra/k8s-prod/ingress-srv.yaml
         ###

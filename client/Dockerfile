@@ -1,8 +1,16 @@
-FROM node:alpine3.13
+FROM node:alpine3.13 AS prod
+ENV NODE_ENV 'production'
+WORKDIR /app
+COPY package.json .
+RUN npm install --only=prod
+COPY . .
+CMD ["npm", "start"]
 
+
+FROM prod AS dev
+ENV NODE_ENV 'development'
 WORKDIR /app
 COPY package.json .
 RUN npm install
 COPY . .
-
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start:dev"]

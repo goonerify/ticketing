@@ -18,16 +18,12 @@ spec:
           # image: us.gcr.io/ticketing-dev-308807/auth
           env:
             - name: MONGO_URI
-              value: "mongodb://auth-mongo-srv:27017/auth"
-            - name: JWT_KEY # Just a label for logging
+              value: 'mongodb://auth-mongo-srv:27017/auth'
+            - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY
-          # resources:
-          #   limits:
-          #     memory: "256Mi"
-          #     cpu: "250m"
 ---
 apiVersion: v1
 kind: Service

@@ -30,17 +30,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # Build the image and push to docker hub
-      - run: |
-          cd auth && docker build -t oldledger/ticketing-auth .
+      - run: | # Run multiple commands with |
+          cd auth && docker build --target prod -t oldledger/ticketing-auth .
           docker push oldledger/ticketing-auth
 
-      # # Set kubernetes context
-      # - uses: azure/k8s-set-context@v1
-      #   with:
-      #     method: service-account
-      #     k8s-url: https://ticketingc-ticketingrg-cec58d-0764636b.hcp.eastus.azmk8s.io:443
-      #     k8s-secret: ${{ secrets.K8S_SERVICE_ACCOUNT_SECRETS  }}
-      #   id: setcontext
       - uses: azure/k8s-set-context@v1
         with:
           method: kubeconfig
@@ -74,19 +67,9 @@ jobs:
           # percentage: 100
 
       - run: kubectl rollout restart deployment auth-depl
+      # - run: kubectl apply -f infra/k8s/auth-depl.yaml
 
       # Cleanup
       - name: logout
         run: |
           az logout
-
-      ### Online template
-      # - uses: azure/k8s-set-context@v1
-      # with:
-      # method: kubeconfig
-      # kubeconfig: ${{ secrets.AZURE_KUBECONFIG }}
-      # context: ticketingCluster-admin
-      # id: setcontext
-      ###
-      # Instruct github to restart the auth deployment in the cluster
-      # - run: kubectl apply -f infra/k8s/auth-depl.yaml

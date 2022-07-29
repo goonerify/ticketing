@@ -31,6 +31,7 @@ build: # NOTE: Context
       context: E:\Projects\Samples\Microservices\ticketing\auth #FIXME: Use environment variable instead of hardcoding this value
       docker:
         dockerfile: Dockerfile
+        target: dev
         # squash: true # Squash docker image layers into single layer to clean secrets
       sync:
         manual:
@@ -42,6 +43,7 @@ build: # NOTE: Context
       context: E:\Projects\Samples\Microservices\ticketing\client #FIXME: Use environment variable instead of hardcoding this value
       docker:
         dockerfile: Dockerfile
+        target: dev
       sync:
         manual:
           - src: "**/*.js" # Files to automatically inject into their pod(s) without rebuilding the app
@@ -52,6 +54,7 @@ build: # NOTE: Context
       context: E:\Projects\Samples\Microservices\ticketing\tickets #FIXME: Use environment variable instead of hardcoding this value
       docker:
         dockerfile: Dockerfile
+        target: dev
       sync:
         manual:
           - src: "src/**/*.ts" # Files to automatically inject into their pod(s) without rebuilding the app
@@ -62,6 +65,7 @@ build: # NOTE: Context
       context: E:\Projects\Samples\Microservices\ticketing\orders #FIXME: Use environment variable instead of hardcoding this value
       docker:
         dockerfile: Dockerfile
+        target: dev
       sync:
         manual:
           - src: "src/**/*.ts" # Files to automatically inject into their pod(s) without rebuilding the app
@@ -72,6 +76,7 @@ build: # NOTE: Context
       context: E:\Projects\Samples\Microservices\ticketing\expiration #FIXME: Use environment variable instead of hardcoding this value
       docker:
         dockerfile: Dockerfile
+        target: dev
       sync:
         manual:
           - src: "src/**/*.ts" # Files to automatically inject into their pod(s) without rebuilding the app
@@ -82,6 +87,7 @@ build: # NOTE: Context
       context: E:\Projects\Samples\Microservices\ticketing\payments #FIXME: Use environment variable instead of hardcoding this value
       docker:
         dockerfile: Dockerfile
+        target: dev
       sync:
         manual:
           - src: "src/**/*.ts" # Files to automatically inject into their pod(s) without rebuilding the app

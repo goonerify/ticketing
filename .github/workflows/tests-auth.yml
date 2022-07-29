@@ -3,7 +3,7 @@ name: tests-auth
 on:
   pull_request:
     paths: # Only run jobs if there are changes to the files below
-      - "auth/**"
+      - 'auth/**'
 
 jobs:
   build:
@@ -11,3 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: cd auth && npm install && npm run test:ci
+      # - run: cd auth && npm install && npm run test -- --coverage

@@ -30,7 +30,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # Build the image and push to docker hub
-      - run: |
+      - run: | # Run multiple commands with |
           cd auth && docker build --target prod -t oldledger/ticketing-auth .
           docker push oldledger/ticketing-auth
 

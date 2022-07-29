@@ -114,6 +114,8 @@ Database polling
 Get all other pods running
 Activate istio control plane pods in AKS
 Bookmark all the useful documentation
+Figure out how to run standalone services i.e repo per service to monorepo
+Deploy services individually without triggering rebuilds of unrelated services
 
 STEPS TO CONFIGURE KUBERNETES WITH ISTIO SERVICE MESH
 Create Resource Group
@@ -126,12 +128,12 @@ Create (and login to) an Azure Container Registry if it doesn't already exist (O
 
 Create a service principal for github if it doesn't exist already
 
-**IMPORTANT: Copy the returned JSON into github secrets AZURE_CREDENTIALS**
+**IMPORTANT: Copy the returned JSON into github secrets AZURE_SERVICE_PRINCIPAL_CREDENTIALS**
 
 `az ad sp create-for-rbac -n "ticketingAppSP" --sdk-auth --role Contributor --scopes /subscriptions/cec58d51-2b5f-4dcd-a97b-9bac721ae4dc/resourceGroups/ticketingRG`
 
 Create Azure kubernetes service
-`az aks create --resource-group ticketingRG --name ticketingCluster --node-count 3 --kubernetes-version 1.20.2 --generate-ssh-keys`
+`az aks create --resource-group ticketingRG --name ticketingCluster --node-count 3 --kubernetes-version 1.20.2 --generate-ssh-keys --node-vm-size Standard_DS2_v2 --load-balancer-sku basic --enable-node-public-ip`
 
 From the directory (E:\Projects\Samples\Devops\Azure\Istio Model)
 Deploy the cluster using istio.json template
@@ -142,15 +144,14 @@ Deploy the cluster using istio.json template
 `aks-engine deploy --subscription-id cec58d51-2b5f-4dcd-a97b-9bac721ae4dc --resource-group ticketingRG --dns-prefix ticketingC-ticketingRG-cec58d --location "East US" --auto-suffix --api-model istio.json`
 
 Use the <dns_prefix>-<id> cluster ID, to copy your kubeconfig to your machine from the \_output folder
-`cp _output\ticketingC-ticketingRG-cec58d-<cluster id>\kubeconfig\kubeconfig.eastus.json ~/.kube/config`
-
-Create Secrets for the ticketing app
-`kubectl create secret generic jwt-secret --from-literal=JWT_KEY=asdfasdf`
-`kubectl create secret generic stripe-secret --from-literal=STRIPE_KEY=sk_test_51If4DQGmbPFPG9W4sGLaMoSx4Y43ObwrFzDvEVaI020wrLX7mysnEXeiEHggKxi0ndk6I9PJeZyDpCrZn2QOe9sO00jKjKb7RZ`
+`cp _output\ticketingC-ticketingRG-cec58d-<CLUSTER ID>\kubeconfig\kubeconfig.eastus.json ~/.kube/config`
 
 IMPORTANT: Set context
-**IMPORTANT: REMEMBER TO UPDATE GITHUB KUBE_CONFIG WITH THE NEW CREDENTIALS**
 `az aks get-credentials --admin --name ticketingCluster --resource-group ticketingRG`
+**RESTART DOCKER TO RENEW/REFRESH YOUR DOCKER DESKTOP CONFIG IN THE CONFIG FILE**
+
+**IMPORTANT: REMEMBER TO UPDATE GITHUB K8S_KUBE_CONFIG WITH THE NEW CREDENTIALS**
+`cd C:\Users\ifean\.kube\config`
 
 <!-- `az aks get-credentials --name ticketingCluster --resource-group ticketingRG` -->
 
@@ -159,3 +160,18 @@ IMPORTANT: Install istio only after context has been set
 
 Enable istio sidecar injection in the default namespace (Optional)
 `kubectl label namespace default istio-injection=enabled`
+
+Get Istio Gateway IP
+`kubectl get service istio-ingressgateway --namespace istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+
+Create Secrets for the ticketing app
+`kubectl create secret generic jwt-secret --from-literal=JWT_KEY=asdfasdf`
+`kubectl create secret generic stripe-secret --from-literal=STRIPE_KEY=sk_test_51If4DQGmbPFPG9W4sGLaMoSx4Y43ObwrFzDvEVaI020wrLX7mysnEXeiEHggKxi0ndk6I9PJeZyDpCrZn2QOe9sO00jKjKb7RZ`
+
+Ensure secrets were created
+`kubectl get secrets`
+
+Deploy the app
+
+Get more information from an object using the wide output
+`kubectl get pods -o wide`
